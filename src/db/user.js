@@ -7,25 +7,31 @@ const query = {
   },
   getProfile: (values) => {
     return {
-      text: "",
+      text: "SELECT p.id, p.full_name, u.bu_id, u.bu_email, u.username, u.bu_role, u.is_verify FROM users u LEFT JOIN profile p ON p.id = u.id WHERE u.id = $1 ",
+      values: values,
+    };
+  },
+  getUserName: (values) => {
+    return {
+      text: "SELECT * FROM users WHERE username = $1 ",
       values: values,
     };
   },
   updateProfile: (values) => {
     return {
-      text: "",
+      text: "UPDATE profile SET full_name = $2, update_at = $3 WHERE id = $1",
       values: values,
     };
   },
-  deleteAccount: (values) => {
+  deleteAccount: (text, values) => {
     return {
-      text: "",
+      text: text,
       values: values,
     };
   },
   statusAccount: (values) => {
     return {
-      text: "",
+      text: "UPDATE users SET is_verify = $2 WHERE id = $1",
       values: values,
     };
   },
