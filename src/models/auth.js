@@ -4,12 +4,13 @@ const user = require("../db/user");
 const { hash } = require("../helpers/password");
 const { v4: uuidv4 } = require("uuid");
 const jwt = require("../helpers/jsonwebtoken");
+const email = require("../helpers/email");
 
 module.exports = {
   register: async (body) => {
     const { username, bu_email, bu_password, bu_role } = body;
 
-    const hashPassword = await hash(bu_password, 16); // Hash
+    const hashPassword = await hash(bu_password, 16); // Hash password
 
     const userResult = await db.query(
       auth.register([
@@ -22,43 +23,47 @@ module.exports = {
         1,
       ])
     );
-    if (!userResult) {
-      throw JSON.stringify(userResult);
-    }
 
     await db.query(user.createProfile([userResult.rows[0].id]));
 
-    const result = userResult;
-
-    return result;
+    return userResult;
   },
 
   login: async (userData) => {
     const { id } = userData;
 
     const token = await jwt.token({ ...userData }, process.env.JWTPRIVATEKEY);
-    if (!token) {
-      throw JSON.stringify(result);
-    }
 
     const result = await db.query(auth.login([id, token, Date.now()]));
-    if (!result) {
-      throw JSON.stringify(result);
-    }
+
     return result;
   },
 
   logout: async (payload) => {
-    const result = await db.query(auth.logout([payload.id]));
-    if (!result) {
-      throw JSON.stringify(result);
-    }
+    await db.query(
+      auth.logout("DELETE FROM log_login WHERE user_id = $1", [payload.id])
+    );
+
+    return JSON.stringify({ msg: "Success logout" });
   },
+
   getToken: async (bl_token) => {
     const result = await db.query(auth.getToken(bl_token));
-    if (!result) {
-      throw JSON.stringify(result);
-    }
     return result;
+  },
+
+  lastActiveAt: async (payload) => {
+    await db.query(
+      auth.logout("UPDATE users SET last_active_at = $2 WHERE bu_id = $1", [
+        payload.bu_id,
+        Date.now(),
+      ])
+    );
+
+    return JSON.stringify({
+      msg: `Success update last active user ${email.maskedEmail(
+        payload.bu_email
+      )}`,
+    });
   },
 };
