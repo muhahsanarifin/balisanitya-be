@@ -10,6 +10,7 @@ router.post(
   check.access,
   check.allowedByRoles(["admin", "owner"]),
   validate.body("c_news_id", "title", "description", "author"),
+  validate.duplicate.body,
   controller.createNew
 );
 router.get("/", controller.getNews);
@@ -18,7 +19,7 @@ router.patch(
   "/update/:id",
   check.access,
   check.allowedByRoles(["admin", "owner"]),
-  validate.params,
+  validate.params.news,
   validate.body("c_news_id", "title", "description", "author"),
   controller.updateNew
 );
@@ -26,7 +27,7 @@ router.delete(
   "/delete/:id",
   check.access,
   check.allowedByRoles(["admin", "owner"]),
-  validate.params,
+  validate.params.news,
   controller.deleteNew
 );
 

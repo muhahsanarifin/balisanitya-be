@@ -29,4 +29,16 @@ module.exports = {
       values: values,
     };
   },
+  getBunIdNews: (values) => {
+    return {
+      text: "SELECT bun_id from news WHERE bun_id = $1",
+      values: values,
+    };
+  },
+  getTitleNews: (values) => {
+    return {
+      text: "SELECT title from news WHERE title = $1",
+      values: values,
+    };
+  },
 };

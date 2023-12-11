@@ -1,7 +1,6 @@
 const db = require("../db/index");
 const news = require("../db/news");
 const { v4: uuidv4 } = require("uuid");
-const value = require("../helpers/value");
 
 const { usePreviousValue } = require("../helpers/value");
 
@@ -113,9 +112,13 @@ module.exports = {
     return JSON.stringify({ msg: "Success delete" });
   },
   // It is used for validate value req.params.id
-  getBunIdNews: async () => {
-    const result = await db.query("SELECT bun_id FROM news");
-
+  getBunIdNews: async (params) => {
+    const result = await db.query(news.getBunIdNews([params.id]));
+    return result.rows;
+  },
+  // It is used for validate redundancy news title
+  getTitleNews: async (body) => {
+    const result = await db.query(news.getTitleNews([body.title]));
     return result.rows;
   },
 };
