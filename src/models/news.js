@@ -1,7 +1,6 @@
 const db = require("../db/index");
 const news = require("../db/news");
 const { v4: uuidv4 } = require("uuid");
-
 const { usePreviousValue } = require("../helpers/value");
 
 module.exports = {
@@ -24,14 +23,19 @@ module.exports = {
     const limit = query.limit;
     const sort_by = query.sort_by;
     const order = query.order;
-    const filter = query.title;
+    const title = query.title;
+    const category = query.category;
 
     const sorting =
       sort_by && order
         ? ` ORDER BY ${sort_by} ${order}`
         : " ORDER BY created_at DESC";
 
-    const filtering = filter ? ` WHERE title ILIKE '%${filter}%'` : "";
+    const filtering = title
+      ? ` WHERE title ILIKE '%${title}%'`
+      : category
+      ? ` WHERE c_news_id = '${category}'`
+      : "";
 
     const pagination =
       page && limit
@@ -41,7 +45,12 @@ module.exports = {
         : "";
 
     const result = await db.query(
-      news.getNews("SELECT * FROM news" + filtering + sorting + pagination)
+      news.getNews(
+        "SELECT n.id, n.bun_id, n.c_news_id, cn.cn_name, n.title, n.description, n.author, n.created_at, n.updated_at FROM news n left join c_news cn on cn.id = n.c_news_id" +
+          filtering +
+          sorting +
+          pagination
+      )
     );
 
     const data = await db.query(news.getNews("SELECT * FROM news"));
@@ -54,9 +63,10 @@ module.exports = {
       page: parseInt(page),
       result_per_page: parseInt(limit),
       total_results: parseInt(data.rowCount),
-      total_pages: filter
-        ? Math.ceil(parseInt(result.rowCount) / parseInt(limit))
-        : Math.ceil(parseInt(data.rowCount) / parseInt(limit)),
+      total_pages:
+        title || category
+          ? Math.ceil(parseInt(result.rowCount) / parseInt(limit))
+          : Math.ceil(parseInt(data.rowCount) / parseInt(limit)),
     };
 
     return JSON.stringify({
