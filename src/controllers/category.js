@@ -33,7 +33,7 @@ module.exports = {
   updateCNew: async (req, res) => {
     try {
       const response = await model.updateCNew(req.body, req.params);
-
+      
       res.status(200).json({
         ...JSON.parse(response),
         status: "Ok",

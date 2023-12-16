@@ -30,7 +30,7 @@ module.exports = {
       });
     }
   },
-  logout: (req, res) => {
+  logout: async (req, res) => {
     Promise.allSettled([
       model.logout(req.userPayload),
       model.lastActiveAt(req.userPayload),
