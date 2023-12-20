@@ -45,7 +45,13 @@ module.exports = {
     );
 
     const data = await db.query(
-      product.getProductViews("SELECT * FROM services_view")
+      product.getProductViews(
+        "SELECT * FROM services_view" +
+          filtering +
+          " ORDER BY" +
+          ` ${sort_by}` +
+          ` ${order}`
+      )
     );
 
     if (result.rows.length < 1) {
@@ -55,10 +61,8 @@ module.exports = {
     const metadata = {
       page: parseInt(page),
       result_per_page: parseInt(limit),
-      total_results: parseInt(data.rowCount),
-      total_pages: title
-        ? Math.ceil(parseInt(result.rowCount) / parseInt(limit))
-        : Math.ceil(parseInt(data.rowCount) / parseInt(limit)),
+      total_results: data.rowCount,
+      total_pages: Math.ceil(data.rowCount / parseInt(limit)),
     };
 
     return JSON.stringify({

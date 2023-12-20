@@ -53,7 +53,9 @@ module.exports = {
       )
     );
 
-    const data = await db.query(news.getNews("SELECT * FROM news"));
+    const data = await db.query(
+      news.getNews("SELECT * FROM news" + filtering + sorting)
+    );
 
     if (result.rows.length < 1) {
       return JSON.stringify({ data: result.rows, msg: "Data does not exist" });
@@ -62,11 +64,8 @@ module.exports = {
     const metadata = {
       page: parseInt(page),
       result_per_page: parseInt(limit),
-      total_results: parseInt(data.rowCount),
-      total_pages:
-        title || category
-          ? Math.ceil(parseInt(result.rowCount) / parseInt(limit))
-          : Math.ceil(parseInt(data.rowCount) / parseInt(limit)),
+      total_results: data.rowCount,
+      total_pages: Math.ceil(data.rowCount / parseInt(limit)),
     };
 
     return JSON.stringify({
