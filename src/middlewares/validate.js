@@ -26,6 +26,13 @@ const body = (...allowedKeys) => {
 
     req.body = newBody;
 
+    if (Object.values(req.body).includes("")) {
+      return res.status(400).json({
+        status: "Bad Request",
+        msg: "Empty input",
+      });
+    }
+
     next();
   };
 };
@@ -39,7 +46,7 @@ const duplicate = {
         .map((value) => value.title.toLowerCase())
         .includes(req.body.title.toLowerCase())
     ) {
-    return res.status(400).json({
+      return res.status(400).json({
         status: "Bad request",
         msg: `(${req.body.title}), The title already exists`,
       });

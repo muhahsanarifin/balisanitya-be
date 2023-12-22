@@ -8,14 +8,14 @@ const validate = require("../middlewares/validate");
 router.post(
   "/register",
   [
-    check.register,
     validate.body("username", "bu_email", "bu_password", "bu_role"),
+    check.register,
   ],
   controller.register
 );
 router.post(
   "/login",
-  [check.login, validate.body("bu_email", "bu_password")],
+  [validate.body("bu_email", "bu_password"), check.login],
   controller.login
 );
 router.delete("/logout", [check.access], controller.logout);
