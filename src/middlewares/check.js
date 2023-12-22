@@ -63,21 +63,20 @@ module.exports = {
       });
     }
 
-    const match = password.match(
+    const match = await password.match(
       req.body.bu_password,
       result.rows[0].bu_password
     );
 
-    if (!match) {
+    if (match) {
+      req.userData = result.rows[0];
+      next();
+    } else {
       return res.status(400).json({
         status: "Bad Request",
         msg: "Wrong password",
       });
     }
-
-    req.userData = result.rows[0];
-
-    next();
   },
   access: async (req, res, next) => {
     const bearerToken = req.header("Authorization");
@@ -102,11 +101,11 @@ module.exports = {
     try {
       const decode = await jwt.decode(token, process.env.JWTPRIVATEKEY);
 
-      const checkveriFy = await getEmail(decode.bu_email);
+      const checkVerify = await getEmail(decode.bu_email);
 
-      if (checkveriFy.rows[0].is_verify !== 1) {
+      if (checkVerify.rows[0].is_verify !== 1) {
         return res.status(400).json({
-          msg: `${maskedEmail(checkveriFy.rows[0].bu_email)} is not active`,
+          msg: `${maskedEmail(checkVerify.rows[0].bu_email)} is not active`,
         });
       }
 

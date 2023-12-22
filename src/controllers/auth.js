@@ -6,7 +6,7 @@ module.exports = {
       const response = await model.login(req.userData);
       res.status(201).json({
         status: "Ok",
-        data: response.rows[0],
+        data: response,
         msg: "Success login",
       });
     } catch (error) {

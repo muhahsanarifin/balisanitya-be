@@ -30,13 +30,13 @@ module.exports = {
   },
 
   login: async (userData) => {
-    const { id } = userData;
+    const { id, bu_role } = userData;
 
     const token = await jwt.token({ ...userData }, process.env.JWTPRIVATEKEY);
 
     const result = await db.query(auth.login([id, token, Date.now()]));
 
-    return result;
+    return { ...result.rows[0], bu_role };
   },
 
   logout: async (payload) => {
