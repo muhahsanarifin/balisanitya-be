@@ -1,10 +1,9 @@
 const { Pool } = require("pg");
 
+const connectionString = `postgres://postgres.qjheiewxydzpozhuxpvp:${process.env.PGPASSWORD}@${process.env.PGHOST}:${process.env.PGPORT}/${process.env.PGDATABASENAME}`;
+
 const pool = new Pool({
-  user: process.env.PGUSER,
-  host: process.env.PGHOST,
-  password: process.env.PGPASSWORD,
-  port: process.env.PGPORT,
+  connectionString,
 });
 
 pool
